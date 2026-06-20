@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Culture Plan — 28-day gut-first meal plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF1EA; --bg2:#E4E9DE; --card:#FFFFFF;
+    --ink:#16221C; --muted:#5C6B60; --line:#D6DCCD;
+    --green:#2F6B4F; --green-deep:#1F4A37; --green-soft:#DCEBE0;
+    --amber:#C9882E; --amber-soft:#F4E6CC; --amber-fg:#8A5A12;
+    --plum:#7A3B5E; --plum-soft:#EBD9E2;
+    --blue:#2C5A6A; --blue-soft:#D7E6EA;
+    --radius:16px; --maxw:1120px;
+    --shadow:0 1px 2px rgba(22,34,28,.04), 0 8px 24px -16px rgba(22,34,28,.25);
+    --display:"Bricolage Grotesque",sans-serif;
+    --body:"Inter",sans-serif;
+    --mono:"Space Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--body); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:
+      radial-gradient(120% 90% at 85% -10%, rgba(201,136,46,.16), transparent 55%),
+      radial-gradient(110% 90% at 8% 0%, rgba(47,107,79,.15), transparent 55%),
+      var(--bg);
+    border-bottom:1px solid var(--line);
+    padding:40px 0 30px;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--green); margin:0 0 14px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block}
+  h1{
+    font-family:var(--display); font-weight:800; letter-spacing:-.02em;
+    font-size:clamp(38px,7vw,76px); line-height:.98; margin:0 0 16px; max-width:14ch;
+  }
+  h1 .ferment{color:var(--green); position:relative; white-space:nowrap}
+  .lede{font-size:clamp(16px,2.2vw,20px); color:var(--muted); max-width:56ch; margin:0 0 26px}
+
+  .pillars{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px}
+  .pillar{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px 18px; box-shadow:var(--shadow);
+  }
+  .pillar .ico{font-size:24px; line-height:1; display:block; margin-bottom:10px}
+  .pillar h3{font-family:var(--display); font-weight:700; font-size:15px; margin:0 0 4px; letter-spacing:-.01em}
+  .pillar p{margin:0; font-size:13px; color:var(--muted); line-height:1.45}
+
+  /* ---------- Sticky nav ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,234,.86); backdrop-filter:saturate(140%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .tabs-inner{display:flex; align-items:center; gap:8px; padding:11px 0; flex-wrap:wrap}
+  .brand-mini{font-family:var(--display); font-weight:800; font-size:15px; margin-right:6px; letter-spacing:-.01em}
+  .brand-mini span{color:var(--green)}
+  .tab{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:.02em;
+    border:1px solid var(--line); background:var(--card); color:var(--ink);
+    padding:8px 13px; border-radius:999px; cursor:pointer; transition:.15s;
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .tab:hover{border-color:var(--green); color:var(--green)}
+  .tab[aria-selected="true"]{background:var(--green); color:#fff; border-color:var(--green)}
+  .tab .wk{font-weight:700}
+  .tab.ghost{margin-left:auto; border-style:dashed}
+  .tab:focus-visible{outline:2px solid var(--green-deep); outline-offset:2px}
+
+  /* ---------- Week section ---------- */
+  main{padding:30px 0 70px}
+  .week{display:none}
+  .week.active{display:block}
+  .week-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:14px; margin:6px 0 22px; flex-wrap:wrap;
+  }
+  .week-head h2{font-family:var(--display); font-weight:800; letter-spacing:-.02em; font-size:clamp(26px,4vw,38px); margin:0}
+  .week-head .sub{font-size:14px; color:var(--muted); font-family:var(--mono)}
+
+  .days{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+
+  .day{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:18px 18px 8px; position:relative; overflow:hidden;
+  }
+  .day::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+    background:linear-gradient(var(--green), var(--amber));}
+  .day-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+  .day-no{display:flex; align-items:baseline; gap:9px}
+  .day-no .n{font-family:var(--display); font-weight:800; font-size:30px; line-height:1; letter-spacing:-.02em}
+  .day-no .lbl{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+  .day-kcal{font-family:var(--mono); font-size:11px; color:var(--amber-fg); background:var(--amber-soft); padding:5px 9px; border-radius:999px}
+
+  /* timeline */
+  .tl{position:relative; padding-left:6px}
+  .row{display:grid; grid-template-columns:54px 1fr; gap:12px; position:relative; padding:9px 0}
+  .row:not(:last-child)::after{content:""; position:absolute; left:62px; top:34px; bottom:-9px; width:2px; background:var(--line)}
+  .time{font-family:var(--mono); font-size:12px; color:var(--muted); padding-top:11px; text-align:right; letter-spacing:-.02em}
+  .meal{display:flex; gap:12px; align-items:flex-start}
+  .disc{
+    width:42px; height:42px; flex:0 0 42px; border-radius:13px; display:grid; place-items:center;
+    font-size:21px; background:var(--green-soft); position:relative; z-index:2;
+    box-shadow:inset 0 0 0 1px rgba(22,34,28,.05);
+  }
+  .meal-body{min-width:0; padding-top:1px}
+  .meal-name{font-weight:600; font-size:14.5px; line-height:1.3}
+  .meal-desc{font-size:12.5px; color:var(--muted); margin-top:2px; line-height:1.4}
+  .chips{display:flex; flex-wrap:wrap; gap:5px; margin-top:7px}
+  .chip{font-family:var(--mono); font-size:10px; letter-spacing:.02em; padding:3px 7px; border-radius:6px; white-space:nowrap}
+
+  .row.snack .disc{width:34px;height:34px;flex-basis:34px;font-size:17px;border-radius:11px}
+  .row.snack .meal-name{font-size:13px;font-weight:500;color:#33433a}
+  .row.snack .time{padding-top:8px; font-size:11px}
+  .row.snack::after{top:30px}
+
+  .row.broth .disc{background:var(--amber-soft)}
+  .row.broth .meal-name{color:var(--amber-fg)}
+  .row.broth{background:linear-gradient(90deg, rgba(244,230,204,.5), transparent); border-radius:10px; margin:0 -6px; padding-left:6px; padding-right:6px}
+
+  /* ---------- Groceries ---------- */
+  .grocery{
+    margin-top:26px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+  }
+  .grocery > button.gtoggle{
+    width:100%; text-align:left; background:none; border:0; cursor:pointer;
+    padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:14px;
+    font-family:inherit; color:inherit;
+  }
+  .gtoggle .gt-l{display:flex;align-items:center;gap:12px}
+  .gtoggle .basket{width:40px;height:40px;border-radius:12px;background:var(--green-soft);display:grid;place-items:center;font-size:20px}
+  .gtoggle h3{font-family:var(--display);font-weight:800;font-size:20px;margin:0;letter-spacing:-.01em}
+  .gtoggle .hint{font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+  .gtoggle .caret{font-family:var(--mono);color:var(--muted);transition:transform .2s}
+  .grocery.open .caret{transform:rotate(180deg)}
+  .gbody{display:none; padding:0 22px 24px}
+  .grocery.open .gbody{display:block}
+  .gcols{display:grid; grid-template-columns:repeat(3,1fr); gap:22px}
+  .gcat h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--green); margin:6px 0 10px; padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .gcat ul{list-style:none; margin:0; padding:0}
+  .gitem{display:flex; gap:9px; align-items:flex-start; padding:5px 0; font-size:13.5px; cursor:pointer; user-select:none}
+  .gitem .box{
+    width:16px;height:16px;flex:0 0 16px;margin-top:2px;border:1.5px solid var(--line);border-radius:5px;
+    display:grid;place-items:center;font-size:11px;color:#fff;transition:.12s;
+  }
+  .gitem.checked .box{background:var(--green);border-color:var(--green)}
+  .gitem.checked span{text-decoration:line-through;color:var(--muted)}
+
+  /* broth recipe card inside grocery */
+  .broth-card{
+    grid-column:1 / -1; margin-top:8px; background:linear-gradient(180deg,var(--amber-soft),#fff);
+    border:1px solid #E9D6B0; border-radius:14px; padding:18px 18px 16px;
+  }
+  .broth-card h4{font-family:var(--display);font-weight:800;font-size:16px;margin:0 0 4px;color:var(--amber-fg);border:0;text-transform:none;letter-spacing:-.01em}
+  .broth-card p{margin:0 0 10px;font-size:13px;color:#6b5320}
+  .broth-card ol{margin:0;padding-left:18px;font-size:13px;color:#5a4718;line-height:1.55}
+  .broth-card b{color:var(--amber-fg)}
+
+  /* ---------- Guidance ---------- */
+  section.guide{background:var(--bg2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:46px 0}
+  .guide h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;font-size:clamp(24px,4vw,34px);margin:0 0 6px}
+  .guide .gl{font-size:15px;color:var(--muted);max-width:60ch;margin:0 0 26px}
+  .gcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .gcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .gcard .num{font-family:var(--mono);font-size:12px;color:var(--amber-fg);background:var(--amber-soft);width:30px;height:30px;border-radius:9px;display:grid;place-items:center;margin-bottom:12px}
+  .gcard h4{font-family:var(--display);font-weight:700;font-size:15.5px;margin:0 0 6px;letter-spacing:-.01em}
+  .gcard p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+  .gcard b{color:var(--ink)}
+
+  /* ---------- Footer ---------- */
+  footer{padding:36px 0 60px}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;font-size:13px;color:var(--muted);line-height:1.55;box-shadow:var(--shadow)}
+  .note b{color:var(--ink)}
+  .swap{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .swap code{background:var(--bg2);padding:2px 6px;border-radius:5px;color:var(--green-deep)}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:900px){
+    .pillars{grid-template-columns:repeat(2,1fr)}
+    .days{grid-template-columns:1fr}
+    .gcols{grid-template-columns:1fr 1fr}
+    .gcards{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 16px}
+    .pillars{grid-template-columns:1fr}
+    .row{grid-template-columns:44px 1fr; gap:9px}
+    .row:not(:last-child)::after{left:51px}
+    .time{font-size:11px}
+    .gcols{grid-template-columns:1fr}
+    .tab.ghost{margin-left:0}
+  }
+
+  /* ---------- Print ---------- */
+  @media print{
+    nav.tabs,.swap{display:none}
+    body{background:#fff}
+    .week{display:block !important; break-before:page}
+    .grocery,.gbody{display:block !important}
+    .gbody{padding-bottom:10px}
+    .pillar,.day,.gcard,.grocery{box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><span class="dot"></span> 28-day protocol · 4 meals/day · bone broth daily</p>
+    <h1>The <span class="ferment">Culture</span> Plan</h1>
+    <p class="lede">A gut-first eating plan built to feed your bacterial colony, lose the stress belly, and hold onto muscle. Fiber diversity, daily fermented foods, a cup of bone broth, and protein at every meal — on your 8 · 12 · 4 · 8 clock.</p>
+    <div class="pillars">
+      <div class="pillar"><span class="ico">🦠</span><h3>Feed the colony</h3><p>40+ different plants across the month, prebiotics &amp; resistant starch to grow beneficial species.</p></div>
+      <div class="pillar"><span class="ico">🍯</span><h3>Daily bone broth</h3><p>One warm cup every day at 2&nbsp;PM — collagen, glycine, and a calming gut ritual.</p></div>
+      <div class="pillar"><span class="ico">🔥</span><h3>Belly &amp; muscle</h3><p>High protein, low refined sugar, slight deficit — pair with lifting to recompose.</p></div>
+      <div class="pillar"><span class="ico">🫙</span><h3>Live cultures</h3><p>Kefir, yogurt, kraut, kimchi, kombucha &amp; miso woven through every single day.</p></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap tabs-inner" id="tabBar">
+    <span class="brand-mini">Culture<span>·</span>Plan</span>
+    <!-- tabs injected -->
+  </div>
+</nav>
+
+<main class="wrap" id="weeks">
+  <!-- weeks injected -->
+</main>
+
+<section class="guide">
+  <div class="wrap">
+    <h2>How to run it</h2>
+    <p class="gl">The plan is the easy half. These seven rules are what actually move your gut flora and your waistline.</p>
+    <div class="gcards" id="guideCards"></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="note">
+    <div class="swap">Want real photos instead of icons? Each meal has an <code>icon</code> field in the data at the bottom of this file — swap any value for <code>&lt;img src="https://your-cdn/photo.jpg"&gt;</code> and adjust <code>.disc</code> in the CSS to clip the image.</div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   DATA  —  edit freely. Vanilla JS, no build step.
+   ============================================================ */
+
+// Tag styling
+const TAGS = {
+  protein:   {l:"Protein",          bg:"#DCEBE0", fg:"#1F4A37"},
+  fiber:     {l:"Fiber",            bg:"#E7EAD9", fg:"#4A5A2E"},
+  fermented: {l:"Fermented",        bg:"#EBD9E2", fg:"#7A3B5E"},
+  prebiotic: {l:"Prebiotic",        bg:"#F4E6CC", fg:"#8A5A12"},
+  polyphenol:{l:"Polyphenol",       bg:"#E6DCEC", fg:"#5E3B7A"},
+  omega3:    {l:"Omega-3",          bg:"#D7E6EA", fg:"#2C5A6A"},
+  resistant: {l:"Resistant starch", bg:"#F0E2C8", fg:"#7A5510"},
+  broth:     {l:"Bone broth",       bg:"#F4E6CC", fg:"#8A5A12"},
+  collagen:  {l:"Collagen",         bg:"#F4E6CC", fg:"#8A5A12"},
+};
+
+// Meal pools. icon = emoji (replace with <img> if you want photos)
+const B = { // 8 AM breakfasts
+  1:{icon:"🥣",name:"Kefir & berry power bowl",desc:"Greek yogurt + kefir, mixed berries, oats, ground flax, walnuts, drizzle of honey",tags:["protein","fermented","fiber","polyphenol"]},
+  2:{icon:"🍳",name:"Veggie omelette + kraut",desc:"3-egg omelette with onion, spinach & mushroom, sauerkraut on the side, sourdough",tags:["protein","fermented","prebiotic"]},
+  3:{icon:"🥛",name:"Overnight oats in kefir",desc:"Oats soaked in kefir, chia, sliced banana, almond butter — made the night before",tags:["fiber","prebiotic","fermented","resistant"]},
+  4:{icon:"🍲",name:"Turmeric tofu scramble",desc:"Scrambled tofu with turmeric, onion & peppers, side of kimchi",tags:["protein","fermented","prebiotic"]},
+  5:{icon:"🐟",name:"Smoked salmon on rye",desc:"Rye with avocado, smoked salmon, red onion & capers, small bowl of yogurt",tags:["protein","omega3","fermented"]},
+  6:{icon:"🥤",name:"Green kefir smoothie",desc:"Kefir, spinach, banana, berries, whey, flaxseed, spoon of almond butter",tags:["protein","fermented","fiber","polyphenol"]},
+  7:{icon:"🥞",name:"Buckwheat pancakes",desc:"Buckwheat pancakes topped with Greek yogurt, berries & chopped walnuts",tags:["fiber","fermented","polyphenol"]},
+  8:{icon:"🍅",name:"Shakshuka",desc:"Eggs poached in tomato, pepper, onion & garlic, mopped up with sourdough",tags:["protein","prebiotic","fiber"]},
+  9:{icon:"🧀",name:"Cottage cheese & peach bowl",desc:"Cottage cheese with peach, pumpkin seeds and a scatter of toasted oats",tags:["protein","fiber"]},
+  10:{icon:"🍜",name:"Savoury miso oats",desc:"Oats simmered with miso & ginger, soft-boiled egg, scallion, sesame",tags:["fermented","protein","prebiotic"]},
+};
+const L = { // 12 PM lunches
+  1:{icon:"🍗",name:"Chicken & quinoa bowl",desc:"Grilled chicken, quinoa, roasted veg, chickpeas, tahini drizzle, kimchi side",tags:["protein","fiber","prebiotic","fermented"]},
+  2:{icon:"🍲",name:"Lentil & vegetable soup",desc:"Big lentil-veg soup with onion, carrot & garlic, sourdough, sauerkraut",tags:["fiber","prebiotic","fermented"]},
+  3:{icon:"🐟",name:"Salmon poke bowl",desc:"Brown rice, salmon, edamame, avocado, cucumber, seaweed, pickled ginger",tags:["protein","omega3","fermented"]},
+  4:{icon:"🌯",name:"Turkey & hummus wrap",desc:"Whole-grain wrap with turkey, hummus & greens, veg sticks, kombucha",tags:["protein","fiber","fermented"]},
+  5:{icon:"🥗",name:"Chickpea buddha bowl",desc:"Chickpeas, roasted veg, greens, brown rice, miso-tahini dressing",tags:["fiber","prebiotic","fermented"]},
+  6:{icon:"🥙",name:"Greek chicken salad",desc:"Grilled chicken, cucumber, tomato, olives, feta, tzatziki",tags:["protein","fermented","polyphenol"]},
+  7:{icon:"🍛",name:"Tempeh stir-fry",desc:"Tempeh with broccoli, peppers, garlic & ginger over brown rice",tags:["protein","fermented","fiber","prebiotic"]},
+  8:{icon:"🥗",name:"Tuna & white bean salad",desc:"Tuna, cannellini beans, arugula, red onion, olive oil & lemon",tags:["protein","fiber","omega3"]},
+  9:{icon:"🥩",name:"Beef & bok choy stir-fry",desc:"Lean beef strips with bok choy, mushroom & garlic over rice",tags:["protein","fiber","prebiotic"]},
+  10:{icon:"🫘",name:"Black bean & sweet potato bowl",desc:"Black beans, roasted sweet potato, avocado, salsa, lime, cilantro",tags:["fiber","prebiotic","resistant"]},
+};
+const M = { // 4 PM mini-meal
+  1:{icon:"🧀",name:"Cottage cheese & pineapple",desc:"Cottage cheese, fresh pineapple, pumpkin seeds",tags:["protein","fiber"]},
+  2:{icon:"🥚",name:"Hummus, veg & eggs",desc:"Hummus with veg sticks and two boiled eggs",tags:["protein","fiber","prebiotic"]},
+  3:{icon:"🫐",name:"Yogurt, berry & granola",desc:"Greek yogurt, mixed berries, low-sugar granola, flaxseed",tags:["protein","fermented","polyphenol"]},
+  4:{icon:"🍎",name:"Apple, nut butter & kefir",desc:"Apple slices with almond butter, walnuts, glass of kefir",tags:["fiber","fermented","polyphenol"]},
+  5:{icon:"🐟",name:"Tuna-avocado crackers",desc:"Tuna & mashed avocado on rye crackers",tags:["protein","omega3","fiber"]},
+  6:{icon:"🍵",name:"Edamame & miso soup",desc:"Steamed edamame with a bowl of miso soup",tags:["protein","fermented","prebiotic"]},
+  7:{icon:"🥤",name:"Kefir protein shake",desc:"Kefir blended with banana, berries & whey",tags:["protein","fermented","polyphenol"]},
+  8:{icon:"🐟",name:"Sardines on crackers",desc:"Sardines on whole-grain crackers with cherry tomatoes",tags:["protein","omega3"]},
+  9:{icon:"🧀",name:"Cheese, olives & grapes",desc:"Cheese, olives, whole-grain crackers, a handful of grapes",tags:["protein","polyphenol"]},
+  10:{icon:"🫛",name:"Roasted chickpeas & dip",desc:"Crunchy roasted chickpeas, carrots, yogurt dip",tags:["fiber","prebiotic","fermented"]},
+};
+const D = { // 8 PM dinners
+  1:{icon:"🐟",name:"Baked salmon & potatoes",desc:"Salmon, roasted asparagus, cooked-&-cooled baby potatoes, sauerkraut",tags:["protein","omega3","prebiotic","resistant","fermented"]},
+  2:{icon:"🍗",name:"Chicken & ratatouille",desc:"Grilled chicken thighs with ratatouille and quinoa",tags:["protein","fiber","prebiotic"]},
+  3:{icon:"🍝",name:"Turkey meatballs & zoodles",desc:"Turkey meatballs in tomato sauce over zucchini noodles, side salad",tags:["protein","fiber"]},
+  4:{icon:"🐟",name:"Miso cod & greens",desc:"Miso-glazed cod with sautéed greens and brown rice",tags:["protein","fermented","fiber"]},
+  5:{icon:"🌶️",name:"Beef & bean chili",desc:"Lean beef chili with kidney beans, tomato, onion & garlic, avocado",tags:["protein","fiber","prebiotic"]},
+  6:{icon:"🍗",name:"Chicken, sprouts & sweet potato",desc:"Baked chicken, roasted Brussels sprouts, cooled sweet potato",tags:["protein","fiber","prebiotic","resistant"]},
+  7:{icon:"🦐",name:"Shrimp & broccoli stir-fry",desc:"Shrimp with broccoli, garlic & ginger over brown rice",tags:["protein","fiber","prebiotic"]},
+  8:{icon:"🍛",name:"Lentil & spinach dal",desc:"Dal with spinach, turmeric, garlic & ginger, brown rice, yogurt",tags:["fiber","prebiotic","fermented"]},
+  9:{icon:"🥩",name:"Steak & potato salad",desc:"Small steak, asparagus, cooked-&-cooled potato salad",tags:["protein","prebiotic","resistant"]},
+  10:{icon:"🍲",name:"Tofu & chickpea curry",desc:"Tofu-chickpea veg curry with spinach over brown rice",tags:["protein","fiber","prebiotic"]},
+};
+// snacks/drinks
+const S10 = [ // ~10 AM
+  {icon:"🍵",name:"Green tea, apple & almonds",tags:["polyphenol","fiber"]},
+  {icon:"🫐",name:"Kombucha & blueberries",tags:["fermented","polyphenol"]},
+  {icon:"🍐",name:"Ginger tea, pear & walnuts",tags:["fiber","polyphenol"]},
+  {icon:"🍊",name:"Green tea, orange & pumpkin seeds",tags:["polyphenol","fiber"]},
+  {icon:"🍌",name:"Peppermint tea & banana",tags:["prebiotic"]},
+];
+const S6 = [ // ~6 PM
+  {icon:"🍫",name:"Kefir & 85% dark chocolate",tags:["fermented","polyphenol"]},
+  {icon:"🥕",name:"Herbal tea, veg sticks & hummus",tags:["fiber","prebiotic"]},
+  {icon:"🫐",name:"Kombucha & mixed berries",tags:["fermented","polyphenol"]},
+  {icon:"🥛",name:"Greek yogurt & cinnamon",tags:["fermented","protein"]},
+  {icon:"🍫",name:"Ginger tea & dark chocolate",tags:["polyphenol"]},
+];
+const BROTH = {icon:"🍯",name:"Bone broth — 1 cup",desc:"Your daily cup, sipped warm. Add a pinch of sea salt and a squeeze of lemon.",tags:["collagen","broth"]};
+
+// 28-day schedule -> indices into pools. snacks rotate by day.
+const SCHEDULE = [
+  // week 1
+  {b:1,l:1,m:1,d:1},{b:2,l:2,m:2,d:2},{b:3,l:3,m:3,d:3},{b:4,l:4,m:4,d:4},{b:5,l:5,m:5,d:5},{b:6,l:6,m:6,d:6},{b:7,l:7,m:7,d:7},
+  // week 2
+  {b:8,l:8,m:8,d:8},{b:9,l:9,m:9,d:9},{b:10,l:10,m:10,d:10},{b:1,l:2,m:1,d:2},{b:2,l:3,m:2,d:3},{b:3,l:4,m:3,d:4},{b:4,l:5,m:4,d:5},
+  // week 3
+  {b:5,l:6,m:5,d:6},{b:6,l:7,m:6,d:7},{b:7,l:8,m:7,d:8},{b:8,l:9,m:8,d:9},{b:9,l:10,m:9,d:10},{b:10,l:1,m:10,d:1},{b:1,l:3,m:2,d:4},
+  // week 4
+  {b:2,l:4,m:3,d:5},{b:3,l:5,m:4,d:6},{b:4,l:6,m:5,d:7},{b:5,l:7,m:6,d:8},{b:6,l:8,m:7,d:9},{b:7,l:9,m:8,d:10},{b:8,l:10,m:9,d:1},
+];
+
+// Grocery lists — one per week (1 adult). Edit quantities to taste.
+const GROCERIES = [
+  { // WEEK 1
+    "Proteins":["Chicken breast ×2","Chicken thighs ×4","Salmon fillets ×3","Smoked salmon 120g","Cod fillets ×2","Raw shrimp 250g","Lean beef mince 300g","Turkey mince 300g","Tempeh 200g","Firm tofu 300g","Eggs ×18"],
+    "Vegetables":["Spinach ×2 bags","Mixed salad greens ×2","Asparagus ×2 bunches","Broccoli ×2","Zucchini ×4","Bell peppers ×5","Red onions ×3","Yellow onions ×4","Garlic ×2 bulbs","Ginger (large knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Baby potatoes 1kg","Eggplant ×1","Leek ×1"],
+    "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Peaches ×3","Avocados ×4","Lemons ×4","Pineapple ×1"],
+    "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste (tub)","Feta 200g"],
+    "Grains & legumes":["Rolled oats 500g","Quinoa 500g","Brown rice 1kg","Buckwheat flour 500g","Sourdough loaf ×1","Rye crackers ×1","Chickpeas ×3 tins","Lentils ×2 tins","Kidney beans ×1 tin","Edamame (frozen) 300g"],
+    "Pantry, fats & flavour":["Extra-virgin olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed 200g","Chia seeds 150g","Honey","85% dark chocolate","Green/ginger/peppermint tea","Turmeric, cumin, paprika","Capers & olives","Low-sugar granola"],
+  },
+  { // WEEK 2
+    "Proteins":["Chicken breast ×2","Salmon fillets ×2","Tuna ×3 tins","Sardines ×2 tins","Cod fillets ×2","Lean beef strips 350g","Turkey mince 300g","Tempeh 200g","Firm tofu 300g","Eggs ×18"],
+    "Vegetables":["Spinach ×2 bags","Bok choy ×2","Broccoli ×2","Brussels sprouts 400g","Bell peppers ×5","Onions ×5","Garlic ×2 bulbs","Ginger (knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Sweet potatoes ×3","Zucchini ×3","Arugula ×2 bags"],
+    "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Grapes 300g","Avocados ×4","Lemons ×4","Peaches ×2"],
+    "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste","Feta 200g","Hard cheese 150g"],
+    "Grains & legumes":["Rolled oats 500g","Quinoa 500g","Brown rice 1kg","Sourdough loaf ×1","Whole-grain wraps ×1","Rye crackers ×1","Chickpeas ×3 tins","Lentils ×2 tins","Black beans ×1 tin","Cannellini beans ×1 tin","Edamame (frozen) 300g"],
+    "Pantry, fats & flavour":["Olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed","Chia seeds","Honey","85% dark chocolate","Green/ginger/peppermint tea","Curry powder, turmeric, cumin","Olives","Salsa","Low-sugar granola"],
+  },
+  { // WEEK 3
+    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×2 tins","Sardines ×2 tins","Cod fillets ×2","Raw shrimp 300g","Small steak ×2","Beef strips 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
+    "Vegetables":["Spinach ×3 bags","Bok choy ×2","Broccoli ×3","Brussels sprouts 400g","Asparagus ×2 bunches","Bell peppers ×5","Onions ×5","Garlic ×2 bulbs","Ginger (knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Sweet potatoes ×2","Baby potatoes 1kg"],
+    "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Grapes 300g","Avocados ×4","Lemons ×4","Pineapple ×1"],
+    "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste","Feta 200g"],
+    "Grains & legumes":["Rolled oats 500g","Quinoa 500g","Brown rice 1kg","Buckwheat flour 250g","Sourdough loaf ×1","Rye crackers ×1","Chickpeas ×3 tins","Lentils ×3 tins","Kidney beans ×1 tin","Edamame (frozen) 300g"],
+    "Pantry, fats & flavour":["Olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed","Chia seeds","Honey","85% dark chocolate","Green/ginger/peppermint tea","Turmeric, cumin, paprika","Capers & olives","Low-sugar granola"],
+  },
+  { // WEEK 4
+    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×3 tins","Sardines ×2 tins","Cod fillets ×2","Raw shrimp 250g","Beef strips 350g","Turkey mince 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
+    "Vegetables":["Spinach ×3 bags","Bok choy ×2","Broccoli ×2","Brussels sprouts 300g","Asparagus ×1 bunch","Bell peppers ×5","Onions ×5","Garlic ×2 bulbs","Ginger (knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Sweet potatoes ×2","Zucchini ×3","Eggplant ×1"],
+    "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Grapes 300g","Avocados ×4","Lemons ×4","Peaches ×2"],
+    "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste","Feta 200g","Hard cheese 150g"],
+    "Grains & legumes":["Rolled oats 500g","Quinoa 500g","Brown rice 1kg","Sourdough loaf ×1","Whole-grain wraps ×1","Rye crackers ×1","Chickpeas ×3 tins","Lentils ×2 tins","Black beans ×1 tin","Cannellini beans ×1 tin","Edamame (frozen) 300g"],
+    "Pantry, fats & flavour":["Olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed","Chia seeds","Honey","85% dark chocolate","Green/ginger/peppermint tea","Curry powder, turmeric, cumin","Olives & salsa","Low-sugar granola"],
+  },
+];
+
+const GUIDE = [
+  {h:"Protein at every meal",p:"Aim for <b>1.6–2.2 g per kg bodyweight</b> daily, split across the four meals. This is the single biggest lever for keeping muscle while you drop belly fat."},
+  {h:"Lift, don't just diet",p:"Eat in a <b>slight deficit (~300–500 kcal)</b> for fat loss, but you only <b>build</b> muscle with 3–4 resistance sessions a week. The food sets it up; training cashes it in."},
+  {h:"Chase plant diversity",p:"Target <b>30+ different plants a week</b> — this plan rotates 40+. Variety feeds more bacterial species than sheer quantity of any one food."},
+  {h:"Cook, cool, then eat starch",p:"Cook potatoes, rice and sweet potato, then <b>refrigerate overnight</b> before eating. Cooling forms <b>resistant starch</b> that feeds butyrate-making bacteria."},
+  {h:"Something fermented daily",p:"Every day includes live cultures — <b>kefir, yogurt, kraut, kimchi, kombucha or miso</b>. Rotate them so you're seeding different strains."},
+  {h:"Sleep, sugar & stress",p:"Visceral 'stress belly' fat responds to <b>7–9 h sleep</b>, low added sugar and alcohol, and lower cortisol — hence the herbal teas and no sugary snacks."},
+];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const $ = (s,el=document)=>el.querySelector(s);
+const el = (t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+
+function chip(tag){
+  const t=TAGS[tag]; if(!t) return "";
+  return `<span class="chip" style="background:${t.bg};color:${t.fg}">${t.l}</span>`;
+}
+function chips(tags){ return `<div class="chips">${tags.map(chip).join("")}</div>`; }
+function tint(tags){ return (TAGS[tags[0]]||{}).bg || "var(--green-soft)"; }
+
+function mealRow(time,m,cls=""){
+  return `<div class="row ${cls}">
+    <div class="time">${time}</div>
+    <div class="meal">
+      <div class="disc" style="background:${tint(m.tags)}">${m.icon}</div>
+      <div class="meal-body">
+        <div class="meal-name">${m.name}</div>
+        ${m.desc?`<div class="meal-desc">${m.desc}</div>`:""}
+        ${chips(m.tags)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function dayCard(dayNum){
+  const s = SCHEDULE[dayNum-1];
+  const s10 = S10[(dayNum-1)%S10.length];
+  const s6  = S6[(dayNum-1)%S6.length];
+  const c = el("div","day");
+  c.innerHTML = `
+    <div class="day-top">
+      <div class="day-no"><span class="n">${dayNum}</span><span class="lbl">Day</span></div>
+      <span class="day-kcal">4 meals · broth · 2 snacks</span>
+    </div>
+    <div class="tl">
+      ${mealRow("8:00<br>AM", B[s.b])}
+      ${mealRow("10:00<br>AM", s10, "snack")}
+      ${mealRow("12:00<br>PM", L[s.l])}
+      ${mealRow("2:00<br>PM", BROTH, "broth snack")}
+      ${mealRow("4:00<br>PM", M[s.m])}
+      ${mealRow("6:00<br>PM", s6, "snack")}
+      ${mealRow("8:00<br>PM", D[s.d])}
+    </div>`;
+  return c;
+}
+
+function brothCard(){
+  return `<div class="broth-card">
+    <h4>🍯 Make-ahead bone broth (1 big batch / week)</h4>
+    <p>One batch covers ~7 cups. Or keep 2 cartons of ready-made broth as a backup.</p>
+    <ol>
+      <li>Roast <b>~1.5 kg beef knuckle/marrow bones</b> (or 2 chicken carcasses) at 200°C for 30 min.</li>
+      <li>Add to a large pot with onion, carrot, celery, garlic, <b>2 tbsp apple cider vinegar</b>, bay & peppercorns.</li>
+      <li>Cover with water, bring to a boil, then <b>simmer low 12–24 h</b> (slow cooker is easiest).</li>
+      <li>Strain, cool, skim fat. Refrigerate up to 5 days or freeze in cup portions.</li>
+    </ol>
+  </div>`;
+}
+
+function grocerySection(weekIdx){
+  const data = GROCERIES[weekIdx];
+  const cats = Object.entries(data).map(([cat,items])=>`
+    <div class="gcat">
+      <h4>${cat}</h4>
+      <ul>${items.map(i=>`<li class="gitem"><span class="box">✓</span><span>${i}</span></li>`).join("")}</ul>
+    </div>`).join("");
+  const wrap = el("div","grocery");
+  wrap.innerHTML = `
+    <button class="gtoggle" aria-expanded="false">
+      <span class="gt-l">
+        <span class="basket">🧺</span>
+        <span>
+          <h3>Week ${weekIdx+1} grocery list</h3>
+          <span class="hint">Tap items to check them off · tap header to collapse</span>
+        </span>
+      </span>
+      <span class="caret">▼</span>
+    </button>
+    <div class="gbody">
+      <div class="gcols">${cats}${brothCard()}</div>
+    </div>`;
+  return wrap;
+}
+
+function buildWeeks(){
+  const weeksEl = $("#weeks");
+  const tabBar = $("#tabBar");
+  for(let w=0; w<4; w++){
+    // tab
+    const tab = el("button","tab");
+    tab.setAttribute("role","tab");
+    tab.setAttribute("aria-selected", w===0?"true":"false");
+    tab.dataset.week = w;
+    tab.innerHTML = `<span class="wk">Week ${w+1}</span>`;
+    tabBar.appendChild(tab);
+
+    // week section
+    const sec = el("section","week"+(w===0?" active":""));
+    sec.id = "week-"+w;
+    const head = el("div","week-head");
+    head.innerHTML = `<h2>Week ${w+1}</h2><span class="sub">Days ${w*7+1}–${w*7+7} · daily bone broth</span>`;
+    sec.appendChild(head);
+    const days = el("div","days");
+    for(let d=1; d<=7; d++) days.appendChild(dayCard(w*7+d));
+    sec.appendChild(days);
+    sec.appendChild(grocerySection(w));
+    weeksEl.appendChild(sec);
+  }
+  // groceries jump tab
+  const g = el("button","tab ghost");
+  g.id="gJump"; g.innerHTML="🧺 Groceries";
+  tabBar.appendChild(g);
+}
+
+function buildGuide(){
+  $("#guideCards").innerHTML = GUIDE.map((c,i)=>`
+    <div class="gcard">
+      <div class="num">${String(i+1).padStart(2,"0")}</div>
+      <h4>${c.h}</h4>
+      <p>${c.p}</p>
+    </div>`).join("");
+}
+
+/* ---------- interactions ---------- */
+function wireUp(){
+  const tabBar = $("#tabBar");
+  tabBar.addEventListener("click", e=>{
+    const tab = e.target.closest(".tab");
+    if(!tab) return;
+    if(tab.id==="gJump"){
+      const active = $(".week.active");
+      active && active.querySelector(".grocery").scrollIntoView({behavior:"smooth",block:"start"});
+      const gr = active.querySelector(".grocery");
+      if(gr && !gr.classList.contains("open")) toggleGrocery(gr);
+      return;
+    }
+    const w = +tab.dataset.week;
+    [...tabBar.querySelectorAll(".tab")].forEach(t=>{
+      if(t.id!=="gJump") t.setAttribute("aria-selected", (+t.dataset.week===w)?"true":"false");
+    });
+    document.querySelectorAll(".week").forEach((s,i)=>s.classList.toggle("active", i===w));
+    window.scrollTo({top: $("nav.tabs").offsetTop, behavior:"smooth"});
+  });
+
+  // grocery toggles + checkboxes (event delegation on document)
+  document.addEventListener("click", e=>{
+    const tog = e.target.closest(".gtoggle");
+    if(tog){ toggleGrocery(tog.closest(".grocery")); return; }
+    const item = e.target.closest(".gitem");
+    if(item){ item.classList.toggle("checked"); }
+  });
+}
+function toggleGrocery(g){
+  const open = g.classList.toggle("open");
+  g.querySelector(".gtoggle").setAttribute("aria-expanded", open);
+}
+
+/* ---------- init ---------- */
+buildWeeks();
+buildGuide();
+wireUp();
+</script>
+</body>
+</html>

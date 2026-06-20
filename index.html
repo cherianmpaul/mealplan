@@ -194,6 +194,28 @@
   .swap{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
   .swap code{background:var(--bg2);padding:2px 6px;border-radius:5px;color:var(--green-deep)}
 
+  /* ---------- Recipe accordion ---------- */
+  .rx-toggle{
+    font-family:var(--mono); font-size:11px; letter-spacing:.02em; color:var(--green);
+    background:none; border:0; border-top:1px dashed var(--line); margin-top:9px;
+    padding:8px 0 2px; width:100%; text-align:left; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  .rx-toggle:hover{color:var(--green-deep)}
+  .rx-toggle:focus-visible{outline:2px solid var(--green-deep); outline-offset:2px}
+  .rx-tri{display:inline-block; width:9px}
+  .recipe{margin-top:6px}
+  .rx{display:grid; grid-template-columns:1fr 1fr; gap:14px; background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:12px 13px}
+  .rx-col h5{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--amber-fg); margin:0 0 7px}
+  .rx-col ol{margin:0; padding-left:16px}
+  .rx-col li{font-size:12.5px; line-height:1.5; color:#33433a; margin-bottom:3px}
+  .rx-col ul{list-style:none; margin:0; padding:0}
+  .rx-col ul li{position:relative; padding-left:14px}
+  .rx-col ul li::before{content:""; position:absolute; left:0; top:7px; width:5px; height:5px; border-radius:50%; background:var(--green)}
+
+  .legume-note{background:linear-gradient(180deg,var(--amber-soft),#fff); border:1px solid #E9D6B0; border-radius:11px; padding:12px 14px; font-size:12.5px; color:#5a4718; line-height:1.5; margin-bottom:18px}
+  .legume-note b{color:var(--amber-fg)}
+
   /* ---------- Responsive ---------- */
   @media (max-width:900px){
     .pillars{grid-template-columns:repeat(2,1fr)}
@@ -208,6 +230,7 @@
     .row:not(:last-child)::after{left:51px}
     .time{font-size:11px}
     .gcols{grid-template-columns:1fr}
+    .rx{grid-template-columns:1fr}
     .tab.ghost{margin-left:0}
   }
 
@@ -219,6 +242,8 @@
     .grocery,.gbody{display:block !important}
     .gbody{padding-bottom:10px}
     .pillar,.day,.gcard,.grocery{box-shadow:none}
+    .recipe[hidden]{display:block !important}
+    .rx-toggle{display:none}
   }
 </style>
 </head>
@@ -284,52 +309,132 @@ const TAGS = {
 
 // Meal pools. icon = emoji (replace with <img> if you want photos)
 const B = { // 8 AM breakfasts
-  1:{icon:"🥣",name:"Kefir & berry power bowl",desc:"Greek yogurt + kefir, mixed berries, oats, ground flax, walnuts, drizzle of honey",tags:["protein","fermented","fiber","polyphenol"]},
-  2:{icon:"🍳",name:"Veggie omelette + kraut",desc:"3-egg omelette with onion, spinach & mushroom, sauerkraut on the side, sourdough",tags:["protein","fermented","prebiotic"]},
-  3:{icon:"🥛",name:"Overnight oats in kefir",desc:"Oats soaked in kefir, chia, sliced banana, almond butter — made the night before",tags:["fiber","prebiotic","fermented","resistant"]},
-  4:{icon:"🍲",name:"Turmeric tofu scramble",desc:"Scrambled tofu with turmeric, onion & peppers, side of kimchi",tags:["protein","fermented","prebiotic"]},
-  5:{icon:"🐟",name:"Smoked salmon on rye",desc:"Rye with avocado, smoked salmon, red onion & capers, small bowl of yogurt",tags:["protein","omega3","fermented"]},
-  6:{icon:"🥤",name:"Green kefir smoothie",desc:"Kefir, spinach, banana, berries, whey, flaxseed, spoon of almond butter",tags:["protein","fermented","fiber","polyphenol"]},
-  7:{icon:"🥞",name:"Buckwheat pancakes",desc:"Buckwheat pancakes topped with Greek yogurt, berries & chopped walnuts",tags:["fiber","fermented","polyphenol"]},
-  8:{icon:"🍅",name:"Shakshuka",desc:"Eggs poached in tomato, pepper, onion & garlic, mopped up with sourdough",tags:["protein","prebiotic","fiber"]},
-  9:{icon:"🧀",name:"Cottage cheese & peach bowl",desc:"Cottage cheese with peach, pumpkin seeds and a scatter of toasted oats",tags:["protein","fiber"]},
-  10:{icon:"🍜",name:"Savoury miso oats",desc:"Oats simmered with miso & ginger, soft-boiled egg, scallion, sesame",tags:["fermented","protein","prebiotic"]},
+  1:{icon:"🥣",name:"Kefir & berry power bowl",desc:"Greek yogurt + kefir, mixed berries, oats, ground flax, walnuts, drizzle of honey",tags:["protein","fermented","fiber","polyphenol"],
+    ing:["150g Greek yogurt","100ml kefir","80g mixed berries","30g rolled oats","1 tbsp ground flax","20g walnuts","1 tsp honey"],
+    steps:["Spoon the yogurt and kefir into a bowl and stir together.","Top with oats, berries and walnuts.","Sprinkle the flax over and drizzle with honey."]},
+  2:{icon:"🍳",name:"Veggie omelette + kraut",desc:"3-egg omelette with onion, spinach & mushroom, sauerkraut on the side, sourdough",tags:["protein","fermented","prebiotic"],
+    ing:["3 eggs","1/4 onion, diced","1 handful spinach","2 mushrooms, sliced","1 tsp olive oil","2 tbsp sauerkraut","1 slice sourdough"],
+    steps:["Whisk the eggs with a pinch of salt.","Soften onion and mushroom in oil 3 min, add spinach until wilted.","Pour in the eggs, cook on low until set, fold over.","Serve with sauerkraut and sourdough."]},
+  3:{icon:"🥛",name:"Overnight oats in kefir",desc:"Oats soaked in kefir, chia, sliced banana, almond butter — made the night before",tags:["fiber","prebiotic","fermented","resistant"],
+    ing:["50g rolled oats","150ml kefir","1 tbsp chia seeds","1 banana, sliced","1 tbsp almond butter"],
+    steps:["The night before, mix oats, kefir and chia in a jar.","Refrigerate overnight.","In the morning, top with banana and almond butter."]},
+  4:{icon:"🍲",name:"Turmeric tofu scramble",desc:"Scrambled tofu with turmeric, onion & peppers, side of kimchi",tags:["protein","fermented","prebiotic"],
+    ing:["150g firm tofu, crumbled","1/4 tsp turmeric","1/4 onion, diced","1/2 pepper, diced","1 tsp olive oil","2 tbsp kimchi"],
+    steps:["Soften onion and pepper in oil 3 min.","Add crumbled tofu and turmeric, cook 5 min while stirring, season.","Serve with kimchi on the side."]},
+  5:{icon:"🐟",name:"Smoked salmon on rye",desc:"Rye with avocado, smoked salmon, red onion & capers, small bowl of yogurt",tags:["protein","omega3","fermented"],
+    ing:["1 slice rye bread","1/2 avocado","60g smoked salmon","A few slices red onion","1 tsp capers","Small bowl of yogurt"],
+    steps:["Toast the rye and mash avocado on top.","Lay over the salmon, red onion and capers.","Serve with a small bowl of yogurt."]},
+  6:{icon:"🥤",name:"Green kefir smoothie",desc:"Kefir, spinach, banana, berries, whey, flaxseed, spoon of almond butter",tags:["protein","fermented","fiber","polyphenol"],
+    ing:["200ml kefir","1 handful spinach","1 banana","60g berries","1 scoop whey","1 tbsp flaxseed","1 tsp almond butter"],
+    steps:["Add everything to a blender.","Blend until smooth, loosening with water if needed."]},
+  7:{icon:"🥞",name:"Buckwheat pancakes",desc:"Buckwheat pancakes topped with Greek yogurt, berries & chopped walnuts",tags:["fiber","fermented","polyphenol"],
+    ing:["60g buckwheat flour","1 egg","100ml milk or kefir","1/2 tsp baking powder","Greek yogurt, berries & walnuts to top","1 tsp oil for the pan"],
+    steps:["Whisk flour, egg, milk and baking powder into a batter.","Cook spoonfuls in a lightly oiled pan, ~1–2 min each side.","Top with yogurt, berries and walnuts."]},
+  8:{icon:"🍅",name:"Shakshuka",desc:"Eggs poached in tomato, pepper, onion & garlic, mopped up with sourdough",tags:["protein","prebiotic","fiber"],
+    ing:["1 tsp olive oil","1/4 onion + 1/2 pepper, diced","1 garlic clove","200g chopped tomatoes","2 eggs","1 slice sourdough"],
+    steps:["Soften onion, pepper and garlic in oil.","Add tomatoes, simmer 8 min, season.","Make 2 wells, crack in the eggs, cover and cook until set.","Serve with sourdough."]},
+  9:{icon:"🧀",name:"Cottage cheese & peach bowl",desc:"Cottage cheese with peach, pumpkin seeds and a scatter of toasted oats",tags:["protein","fiber"],
+    ing:["150g cottage cheese","1 peach, sliced","1 tbsp pumpkin seeds","2 tbsp toasted oats"],
+    steps:["Spoon cottage cheese into a bowl.","Top with peach, pumpkin seeds and oats."]},
+  10:{icon:"🍜",name:"Savoury miso oats",desc:"Oats simmered with miso & ginger, soft-boiled egg, scallion, sesame",tags:["fermented","protein","prebiotic"],
+    ing:["50g rolled oats","250ml water","1 tsp miso paste","1 egg","1 scallion, sliced","1/2 tsp sesame seeds"],
+    steps:["Simmer oats in the water 4–5 min.","Stir in the miso off the heat (don't boil it).","Soft-boil the egg 6 min, halve it over the oats.","Top with scallion and sesame."]},
 };
 const L = { // 12 PM lunches
-  1:{icon:"🍗",name:"Chicken & quinoa bowl",desc:"Grilled chicken, quinoa, roasted veg, chickpeas, tahini drizzle, kimchi side",tags:["protein","fiber","prebiotic","fermented"]},
-  2:{icon:"🍲",name:"Lentil & vegetable soup",desc:"Big lentil-veg soup with onion, carrot & garlic, sourdough, sauerkraut",tags:["fiber","prebiotic","fermented"]},
-  3:{icon:"🐟",name:"Salmon poke bowl",desc:"Brown rice, salmon, edamame, avocado, cucumber, seaweed, pickled ginger",tags:["protein","omega3","fermented"]},
-  4:{icon:"🌯",name:"Turkey & hummus wrap",desc:"Whole-grain wrap with turkey, hummus & greens, veg sticks, kombucha",tags:["protein","fiber","fermented"]},
-  5:{icon:"🥗",name:"Chickpea buddha bowl",desc:"Chickpeas, roasted veg, greens, brown rice, miso-tahini dressing",tags:["fiber","prebiotic","fermented"]},
-  6:{icon:"🥙",name:"Greek chicken salad",desc:"Grilled chicken, cucumber, tomato, olives, feta, tzatziki",tags:["protein","fermented","polyphenol"]},
-  7:{icon:"🍛",name:"Tempeh stir-fry",desc:"Tempeh with broccoli, peppers, garlic & ginger over brown rice",tags:["protein","fermented","fiber","prebiotic"]},
-  8:{icon:"🥗",name:"Tuna & white bean salad",desc:"Tuna, cannellini beans, arugula, red onion, olive oil & lemon",tags:["protein","fiber","omega3"]},
-  9:{icon:"🥩",name:"Beef & bok choy stir-fry",desc:"Lean beef strips with bok choy, mushroom & garlic over rice",tags:["protein","fiber","prebiotic"]},
-  10:{icon:"🫘",name:"Black bean & sweet potato bowl",desc:"Black beans, roasted sweet potato, avocado, salsa, lime, cilantro",tags:["fiber","prebiotic","resistant"]},
+  1:{icon:"🍗",name:"Chicken & quinoa bowl",desc:"Grilled chicken, quinoa, roasted veg, chickpeas, tahini drizzle, kimchi side",tags:["protein","fiber","prebiotic","fermented"],
+    ing:["1 chicken breast","60g quinoa (dry)","1 cup mixed veg","100g chickpeas","1 tbsp tahini","2 tbsp kimchi"],
+    steps:["Cook quinoa per pack; roast the veg at 200°C 20 min.","Grill or pan-cook the seasoned chicken ~6 min/side, then slice.","Build the bowl with quinoa, veg, chickpeas and chicken.","Drizzle with tahini, add kimchi. (Soak dried chickpeas overnight — see bean note.)"]},
+  2:{icon:"🍲",name:"Lentil & vegetable soup",desc:"Big lentil-veg soup with onion, carrot & garlic, sourdough, sauerkraut",tags:["fiber","prebiotic","fermented"],
+    ing:["100g lentils (or 1 tin)","1/4 onion, 1 carrot, 1 celery, diced","2 garlic cloves","500ml stock","1 slice sourdough","2 tbsp sauerkraut"],
+    steps:["Soften onion, carrot, celery and garlic in a pot 5 min.","Add lentils and stock, simmer 25–30 min until tender.","Season, and blend a little if you like a thicker soup.","Serve with sourdough and sauerkraut."]},
+  3:{icon:"🐟",name:"Salmon poke bowl",desc:"Brown rice, salmon, edamame, avocado, cucumber, seaweed, pickled ginger",tags:["protein","omega3","fermented"],
+    ing:["1 salmon fillet (sushi-grade or seared)","100g brown rice (cooked)","50g edamame","1/2 avocado","1/2 cucumber","Pickled ginger, seaweed, soy"],
+    steps:["Cook and cool the brown rice.","Use sushi-grade salmon or sear it, then cut into cubes.","Arrange rice, salmon, edamame, avocado and cucumber in a bowl.","Top with ginger, seaweed and a little soy."]},
+  4:{icon:"🌯",name:"Turkey & hummus wrap",desc:"Whole-grain wrap with turkey, hummus & greens, veg sticks, kombucha",tags:["protein","fiber","fermented"],
+    ing:["1 whole-grain wrap","3 tbsp hummus","100g cooked turkey","Handful of greens","Veg sticks","1 kombucha"],
+    steps:["Spread hummus over the wrap.","Layer turkey and greens, then roll up tightly.","Serve with veg sticks and a kombucha."]},
+  5:{icon:"🥗",name:"Chickpea buddha bowl",desc:"Chickpeas, roasted veg, greens, brown rice, miso-tahini dressing",tags:["fiber","prebiotic","fermented"],
+    ing:["150g chickpeas","1 cup veg","Handful of greens","100g brown rice (cooked)","1 tbsp tahini + 1 tsp miso + lemon"],
+    steps:["Roast the veg and warm the chickpeas.","Whisk tahini, miso, lemon and a splash of water into a dressing.","Assemble rice, greens, veg and chickpeas, then spoon over the dressing. (Soak dried chickpeas overnight — see bean note.)"]},
+  6:{icon:"🥙",name:"Greek chicken salad",desc:"Grilled chicken, cucumber, tomato, olives, feta, tzatziki",tags:["protein","fermented","polyphenol"],
+    ing:["1 chicken breast","1/2 cucumber","1 tomato","Handful of olives","40g feta","2 tbsp tzatziki","Olive oil & lemon"],
+    steps:["Grill the seasoned chicken ~6 min/side, then slice.","Chop cucumber and tomato, add olives and feta.","Top with chicken, dress with oil and lemon, add tzatziki."]},
+  7:{icon:"🍛",name:"Tempeh stir-fry",desc:"Tempeh with broccoli, peppers, garlic & ginger over brown rice",tags:["protein","fermented","fiber","prebiotic"],
+    ing:["150g tempeh, cubed","1 head broccoli","1/2 pepper","1 garlic clove + thumb ginger","1 tbsp soy","100g brown rice (cooked)"],
+    steps:["Pan-fry the tempeh until golden, then set aside.","Stir-fry broccoli and pepper 4 min with garlic and ginger.","Return the tempeh, add soy, toss 1 min.","Serve over brown rice."]},
+  8:{icon:"🥗",name:"Tuna & white bean salad",desc:"Tuna, cannellini beans, arugula, red onion, olive oil & lemon",tags:["protein","fiber","omega3"],
+    ing:["1 tin tuna, drained","150g cannellini beans","Handful of arugula","1/4 red onion","Olive oil & lemon"],
+    steps:["Combine beans, arugula and sliced onion.","Flake the tuna over the top.","Dress with olive oil, lemon, salt and pepper. (Soak dried beans overnight — see bean note.)"]},
+  9:{icon:"🥩",name:"Beef & bok choy stir-fry",desc:"Lean beef strips with bok choy, mushroom & garlic over rice",tags:["protein","fiber","prebiotic"],
+    ing:["120g lean beef strips","2 bok choy, halved","4 mushrooms","1 garlic clove","1 tbsp soy","100g rice (cooked)"],
+    steps:["Sear the beef strips 2 min, then remove.","Stir-fry bok choy and mushrooms with garlic 3 min.","Return the beef, add soy, toss.","Serve over rice."]},
+  10:{icon:"🫘",name:"Black bean & sweet potato bowl",desc:"Black beans, roasted sweet potato, avocado, salsa, lime, cilantro",tags:["fiber","prebiotic","resistant"],
+    ing:["150g black beans","1 sweet potato, cubed","1/2 avocado","2 tbsp salsa","Lime & cilantro"],
+    steps:["Roast the sweet potato at 200°C 25 min.","Warm the beans.","Bowl up with avocado, salsa, lime and cilantro. (Soak dried black beans overnight — see bean note.)"]},
 };
 const M = { // 4 PM mini-meal
-  1:{icon:"🧀",name:"Cottage cheese & pineapple",desc:"Cottage cheese, fresh pineapple, pumpkin seeds",tags:["protein","fiber"]},
-  2:{icon:"🥚",name:"Hummus, veg & eggs",desc:"Hummus with veg sticks and two boiled eggs",tags:["protein","fiber","prebiotic"]},
-  3:{icon:"🫐",name:"Yogurt, berry & granola",desc:"Greek yogurt, mixed berries, low-sugar granola, flaxseed",tags:["protein","fermented","polyphenol"]},
-  4:{icon:"🍎",name:"Apple, nut butter & kefir",desc:"Apple slices with almond butter, walnuts, glass of kefir",tags:["fiber","fermented","polyphenol"]},
-  5:{icon:"🐟",name:"Tuna-avocado crackers",desc:"Tuna & mashed avocado on rye crackers",tags:["protein","omega3","fiber"]},
-  6:{icon:"🍵",name:"Edamame & miso soup",desc:"Steamed edamame with a bowl of miso soup",tags:["protein","fermented","prebiotic"]},
-  7:{icon:"🥤",name:"Kefir protein shake",desc:"Kefir blended with banana, berries & whey",tags:["protein","fermented","polyphenol"]},
-  8:{icon:"🐟",name:"Sardines on crackers",desc:"Sardines on whole-grain crackers with cherry tomatoes",tags:["protein","omega3"]},
-  9:{icon:"🧀",name:"Cheese, olives & grapes",desc:"Cheese, olives, whole-grain crackers, a handful of grapes",tags:["protein","polyphenol"]},
-  10:{icon:"🫛",name:"Roasted chickpeas & dip",desc:"Crunchy roasted chickpeas, carrots, yogurt dip",tags:["fiber","prebiotic","fermented"]},
+  1:{icon:"🧀",name:"Cottage cheese & pineapple",desc:"Cottage cheese, fresh pineapple, pumpkin seeds",tags:["protein","fiber"],
+    ing:["150g cottage cheese","100g pineapple","1 tbsp pumpkin seeds"],
+    steps:["Top the cottage cheese with pineapple and pumpkin seeds."]},
+  2:{icon:"🥚",name:"Hummus, veg & eggs",desc:"Hummus with veg sticks and two boiled eggs",tags:["protein","fiber","prebiotic"],
+    ing:["3 tbsp hummus","Carrot & pepper sticks","2 eggs"],
+    steps:["Boil the eggs 8 min, then cool and peel.","Serve with hummus and veg sticks."]},
+  3:{icon:"🫐",name:"Yogurt, berry & granola",desc:"Greek yogurt, mixed berries, low-sugar granola, flaxseed",tags:["protein","fermented","polyphenol"],
+    ing:["150g Greek yogurt","60g berries","2 tbsp granola","1 tsp flax"],
+    steps:["Layer yogurt, berries and granola.","Sprinkle flax on top."]},
+  4:{icon:"🍎",name:"Apple, nut butter & kefir",desc:"Apple slices with almond butter, walnuts, glass of kefir",tags:["fiber","fermented","polyphenol"],
+    ing:["1 apple","1 tbsp almond butter","15g walnuts","1 glass kefir"],
+    steps:["Slice the apple and serve with almond butter and walnuts.","Drink the kefir alongside."]},
+  5:{icon:"🐟",name:"Tuna-avocado crackers",desc:"Tuna & mashed avocado on rye crackers",tags:["protein","omega3","fiber"],
+    ing:["1/2 tin tuna","1/2 avocado","4 rye crackers"],
+    steps:["Mash the tuna with the avocado.","Spread onto the crackers."]},
+  6:{icon:"🍵",name:"Edamame & miso soup",desc:"Steamed edamame with a bowl of miso soup",tags:["protein","fermented","prebiotic"],
+    ing:["100g edamame","1 tsp miso paste","250ml hot water","1 scallion"],
+    steps:["Steam the edamame 4 min.","Stir miso into the hot water (off the boil), add scallion."]},
+  7:{icon:"🥤",name:"Kefir protein shake",desc:"Kefir blended with banana, berries & whey",tags:["protein","fermented","polyphenol"],
+    ing:["250ml kefir","1 banana","60g berries","1 scoop whey"],
+    steps:["Blend everything until smooth."]},
+  8:{icon:"🐟",name:"Sardines on crackers",desc:"Sardines on whole-grain crackers with cherry tomatoes",tags:["protein","omega3"],
+    ing:["1 tin sardines","4 whole-grain crackers","Handful of cherry tomatoes"],
+    steps:["Lay the sardines on the crackers.","Serve with cherry tomatoes."]},
+  9:{icon:"🧀",name:"Cheese, olives & grapes",desc:"Cheese, olives, whole-grain crackers, a handful of grapes",tags:["protein","polyphenol"],
+    ing:["40g cheese","Handful of olives","4 crackers","Handful of grapes"],
+    steps:["Plate the cheese, olives, crackers and grapes."]},
+  10:{icon:"🫛",name:"Roasted chickpeas & dip",desc:"Crunchy roasted chickpeas, carrots, yogurt dip",tags:["fiber","prebiotic","fermented"],
+    ing:["150g chickpeas","1 tsp olive oil","Carrot sticks","3 tbsp yogurt + pinch cumin"],
+    steps:["Toss the chickpeas in oil and roast at 200°C 25 min until crisp.","Mix yogurt with cumin for a dip.","Serve with carrot sticks. (Soak dried chickpeas overnight — see bean note.)"]},
 };
 const D = { // 8 PM dinners
-  1:{icon:"🐟",name:"Baked salmon & potatoes",desc:"Salmon, roasted asparagus, cooked-&-cooled baby potatoes, sauerkraut",tags:["protein","omega3","prebiotic","resistant","fermented"]},
-  2:{icon:"🍗",name:"Chicken & ratatouille",desc:"Grilled chicken thighs with ratatouille and quinoa",tags:["protein","fiber","prebiotic"]},
-  3:{icon:"🍝",name:"Turkey meatballs & zoodles",desc:"Turkey meatballs in tomato sauce over zucchini noodles, side salad",tags:["protein","fiber"]},
-  4:{icon:"🐟",name:"Miso cod & greens",desc:"Miso-glazed cod with sautéed greens and brown rice",tags:["protein","fermented","fiber"]},
-  5:{icon:"🌶️",name:"Beef & bean chili",desc:"Lean beef chili with kidney beans, tomato, onion & garlic, avocado",tags:["protein","fiber","prebiotic"]},
-  6:{icon:"🍗",name:"Chicken, sprouts & sweet potato",desc:"Baked chicken, roasted Brussels sprouts, cooled sweet potato",tags:["protein","fiber","prebiotic","resistant"]},
-  7:{icon:"🦐",name:"Shrimp & broccoli stir-fry",desc:"Shrimp with broccoli, garlic & ginger over brown rice",tags:["protein","fiber","prebiotic"]},
-  8:{icon:"🍛",name:"Lentil & spinach dal",desc:"Dal with spinach, turmeric, garlic & ginger, brown rice, yogurt",tags:["fiber","prebiotic","fermented"]},
-  9:{icon:"🥩",name:"Steak & potato salad",desc:"Small steak, asparagus, cooked-&-cooled potato salad",tags:["protein","prebiotic","resistant"]},
-  10:{icon:"🍲",name:"Tofu & chickpea curry",desc:"Tofu-chickpea veg curry with spinach over brown rice",tags:["protein","fiber","prebiotic"]},
+  1:{icon:"🐟",name:"Baked salmon & potatoes",desc:"Salmon, roasted asparagus, cooked-&-cooled baby potatoes, sauerkraut",tags:["protein","omega3","prebiotic","resistant","fermented"],
+    ing:["1 salmon fillet","1 bunch asparagus","250g baby potatoes","1 tsp olive oil","2 tbsp sauerkraut"],
+    steps:["Boil the potatoes, then cool them (ideally overnight for resistant starch).","Bake salmon and asparagus with oil at 200°C 12–15 min.","Pan-crisp the cooled potatoes.","Serve with sauerkraut."]},
+  2:{icon:"🍗",name:"Chicken & ratatouille",desc:"Grilled chicken thighs with ratatouille and quinoa",tags:["protein","fiber","prebiotic"],
+    ing:["2 chicken thighs","1/2 eggplant, 1 zucchini, 1/2 pepper, 1/4 onion","200g chopped tomatoes","1 garlic clove","60g quinoa (dry)"],
+    steps:["Cook quinoa per pack.","Sauté the veg with garlic 5 min, add tomatoes, simmer 15 min.","Pan or oven-cook the seasoned thighs ~20 min until done.","Serve the thighs over ratatouille with quinoa."]},
+  3:{icon:"🍝",name:"Turkey meatballs & zoodles",desc:"Turkey meatballs in tomato sauce over zucchini noodles, side salad",tags:["protein","fiber"],
+    ing:["150g turkey mince","1 garlic clove, herbs","200g chopped tomatoes","2 zucchini, spiralised","Side salad"],
+    steps:["Mix mince with garlic, herbs and salt, roll into balls.","Brown the balls, add tomatoes, simmer 10 min.","Quickly sauté the zoodles 2 min.","Spoon meatballs over the zoodles, serve with salad."]},
+  4:{icon:"🐟",name:"Miso cod & greens",desc:"Miso-glazed cod with sautéed greens and brown rice",tags:["protein","fermented","fiber"],
+    ing:["1 cod fillet","1 tsp miso + 1 tsp honey","2 handfuls greens (bok choy/kale)","1 garlic clove","100g brown rice (cooked)"],
+    steps:["Mix miso and honey, brush over the cod, bake at 200°C 12 min.","Sauté the greens with garlic 3 min.","Serve cod and greens over brown rice."]},
+  5:{icon:"🌶️",name:"Beef & bean chili",desc:"Lean beef chili with kidney beans, tomato, onion & garlic, avocado",tags:["protein","fiber","prebiotic"],
+    ing:["150g lean beef mince","150g kidney beans","200g chopped tomatoes","1/4 onion + 1 garlic clove","1 tsp cumin/paprika","1/2 avocado"],
+    steps:["Brown the mince with onion and garlic.","Add tomatoes, beans and spices, simmer 20 min.","Top with avocado. (Soak dried kidney beans overnight, then boil hard 10 min — see bean note.)"]},
+  6:{icon:"🍗",name:"Chicken, sprouts & sweet potato",desc:"Baked chicken, roasted Brussels sprouts, cooled sweet potato",tags:["protein","fiber","prebiotic","resistant"],
+    ing:["1 chicken breast","200g Brussels sprouts, halved","1 sweet potato","1 tsp olive oil"],
+    steps:["Roast cubed sweet potato and sprouts with oil at 200°C 25 min.","For resistant starch, cook the potato a day ahead and cool it.","Pan-cook the seasoned chicken ~6 min/side.","Plate together."]},
+  7:{icon:"🥦",name:"Sesame chicken & broccoli stir-fry",desc:"Chicken with broccoli, garlic & ginger over brown rice",tags:["protein","fiber","prebiotic"],
+    ing:["1 chicken breast, sliced","1 head broccoli","1 garlic clove + thumb ginger","1 tbsp soy","1/2 tsp sesame oil + sesame seeds","100g brown rice (cooked)"],
+    steps:["Stir-fry the chicken until cooked through, then remove.","Stir-fry the broccoli 4 min with garlic and ginger.","Return the chicken, add soy and sesame, toss 1 min.","Serve over brown rice."]},
+  8:{icon:"🍛",name:"Lentil & spinach dal",desc:"Dal with spinach, turmeric, garlic & ginger, brown rice, yogurt",tags:["fiber","prebiotic","fermented"],
+    ing:["100g red lentils","1/2 tsp turmeric","1 garlic clove + thumb ginger","2 handfuls spinach","100g brown rice (cooked)","2 tbsp yogurt"],
+    steps:["Simmer lentils with turmeric, garlic and ginger in 400ml water 20 min.","Stir in the spinach until wilted, then season.","Serve over rice with a spoon of yogurt. (Red lentils need no soaking.)"]},
+  9:{icon:"🥩",name:"Steak & potato salad",desc:"Small steak, asparagus, cooked-&-cooled potato salad",tags:["protein","prebiotic","resistant"],
+    ing:["1 small steak","1 bunch asparagus","250g baby potatoes","1 tsp mustard + olive oil + herbs"],
+    steps:["Boil the potatoes, cool (ideally overnight), then dress with mustard, oil and herbs.","Sear the steak to your liking, rest 5 min.","Griddle the asparagus 3 min.","Slice the steak, serve with asparagus and potato salad."]},
+  10:{icon:"🍲",name:"Tofu & chickpea curry",desc:"Tofu-chickpea veg curry with spinach over brown rice",tags:["protein","fiber","prebiotic"],
+    ing:["150g firm tofu","100g chickpeas","200g chopped tomatoes (or coconut)","1 garlic clove + thumb ginger + curry spices","2 handfuls spinach","100g brown rice (cooked)"],
+    steps:["Brown the tofu cubes, then set aside.","Fry garlic, ginger and spices, add tomatoes and chickpeas, simmer 10 min.","Return the tofu, stir in spinach until wilted.","Serve over rice. (Soak dried chickpeas overnight — see bean note.)"]},
 };
 // snacks/drinks
 const S10 = [ // ~10 AM
@@ -363,7 +468,7 @@ const SCHEDULE = [
 // Grocery lists — one per week (1 adult). Edit quantities to taste.
 const GROCERIES = [
   { // WEEK 1
-    "Proteins":["Chicken breast ×2","Chicken thighs ×4","Salmon fillets ×3","Smoked salmon 120g","Cod fillets ×2","Raw shrimp 250g","Lean beef mince 300g","Turkey mince 300g","Tempeh 200g","Firm tofu 300g","Eggs ×18"],
+    "Proteins":["Chicken breast ×2","Chicken thighs ×4","Salmon fillets ×3","Smoked salmon 120g","Cod fillets ×2","Lean beef mince 300g","Turkey mince 300g","Tempeh 200g","Firm tofu 300g","Eggs ×18"],
     "Vegetables":["Spinach ×2 bags","Mixed salad greens ×2","Asparagus ×2 bunches","Broccoli ×2","Zucchini ×4","Bell peppers ×5","Red onions ×3","Yellow onions ×4","Garlic ×2 bulbs","Ginger (large knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Baby potatoes 1kg","Eggplant ×1","Leek ×1"],
     "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Peaches ×3","Avocados ×4","Lemons ×4","Pineapple ×1"],
     "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste (tub)","Feta 200g"],
@@ -379,7 +484,7 @@ const GROCERIES = [
     "Pantry, fats & flavour":["Olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed","Chia seeds","Honey","85% dark chocolate","Green/ginger/peppermint tea","Curry powder, turmeric, cumin","Olives","Salsa","Low-sugar granola"],
   },
   { // WEEK 3
-    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×2 tins","Sardines ×2 tins","Cod fillets ×2","Raw shrimp 300g","Small steak ×2","Beef strips 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
+    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×2 tins","Sardines ×2 tins","Cod fillets ×2","Small steak ×2","Beef strips 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
     "Vegetables":["Spinach ×3 bags","Bok choy ×2","Broccoli ×3","Brussels sprouts 400g","Asparagus ×2 bunches","Bell peppers ×5","Onions ×5","Garlic ×2 bulbs","Ginger (knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Sweet potatoes ×2","Baby potatoes 1kg"],
     "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Grapes 300g","Avocados ×4","Lemons ×4","Pineapple ×1"],
     "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste","Feta 200g"],
@@ -387,7 +492,7 @@ const GROCERIES = [
     "Pantry, fats & flavour":["Olive oil","Tahini","Almond butter","Hummus (tub)","Walnuts 200g","Almonds 150g","Pumpkin seeds 150g","Ground flaxseed","Chia seeds","Honey","85% dark chocolate","Green/ginger/peppermint tea","Turmeric, cumin, paprika","Capers & olives","Low-sugar granola"],
   },
   { // WEEK 4
-    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×3 tins","Sardines ×2 tins","Cod fillets ×2","Raw shrimp 250g","Beef strips 350g","Turkey mince 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
+    "Proteins":["Chicken breast ×2","Chicken thighs ×2","Salmon fillets ×2","Tuna ×3 tins","Sardines ×2 tins","Cod fillets ×2","Beef strips 350g","Turkey mince 250g","Firm tofu 300g","Tempeh 200g","Eggs ×18"],
     "Vegetables":["Spinach ×3 bags","Bok choy ×2","Broccoli ×2","Brussels sprouts 300g","Asparagus ×1 bunch","Bell peppers ×5","Onions ×5","Garlic ×2 bulbs","Ginger (knob)","Cucumber ×3","Cherry tomatoes ×2","Tomatoes ×6","Carrots 1kg","Mushrooms 250g","Sweet potatoes ×2","Zucchini ×3","Eggplant ×1"],
     "Fruits":["Mixed berries 600g","Bananas ×7","Apples ×4","Pears ×2","Oranges ×3","Grapes 300g","Avocados ×4","Lemons ×4","Peaches ×2"],
     "Fermented & cultured":["Plain kefir 1L","Greek yogurt 1kg","Cottage cheese 500g","Sauerkraut (jar)","Kimchi (jar)","Kombucha ×4","Miso paste","Feta 200g","Hard cheese 150g"],
@@ -403,6 +508,7 @@ const GUIDE = [
   {h:"Cook, cool, then eat starch",p:"Cook potatoes, rice and sweet potato, then <b>refrigerate overnight</b> before eating. Cooling forms <b>resistant starch</b> that feeds butyrate-making bacteria."},
   {h:"Something fermented daily",p:"Every day includes live cultures — <b>kefir, yogurt, kraut, kimchi, kombucha or miso</b>. Rotate them so you're seeding different strains."},
   {h:"Sleep, sugar & stress",p:"Visceral 'stress belly' fat responds to <b>7–9 h sleep</b>, low added sugar and alcohol, and lower cortisol — hence the herbal teas and no sugary snacks."},
+  {h:"Soak your beans",p:"Using dried beans or chickpeas? <b>Soak them overnight</b> the day before, then <b>throw out the soaking water</b> and cook in fresh — it removes much of what causes gas and bloating. Boil kidney beans hard for 10 min."},
 ];
 
 /* ============================================================
@@ -418,6 +524,19 @@ function chip(tag){
 function chips(tags){ return `<div class="chips">${tags.map(chip).join("")}</div>`; }
 function tint(tags){ return (TAGS[tags[0]]||{}).bg || "var(--green-soft)"; }
 
+function recipeDrawer(m){
+  if(!(m.ing && m.steps)) return "";
+  const ings = m.ing.map(i=>`<li>${i}</li>`).join("");
+  const steps = m.steps.map(s=>`<li>${s}</li>`).join("");
+  return `<button class="rx-toggle" aria-expanded="false"><span class="rx-tri">▸</span> Recipe &amp; method</button>
+        <div class="recipe" hidden>
+          <div class="rx">
+            <div class="rx-col"><h5>Ingredients</h5><ul>${ings}</ul></div>
+            <div class="rx-col"><h5>Method</h5><ol>${steps}</ol></div>
+          </div>
+        </div>`;
+}
+
 function mealRow(time,m,cls=""){
   return `<div class="row ${cls}">
     <div class="time">${time}</div>
@@ -427,6 +546,7 @@ function mealRow(time,m,cls=""){
         <div class="meal-name">${m.name}</div>
         ${m.desc?`<div class="meal-desc">${m.desc}</div>`:""}
         ${chips(m.tags)}
+        ${recipeDrawer(m)}
       </div>
     </div>
   </div>`;
@@ -487,6 +607,7 @@ function grocerySection(weekIdx){
       <span class="caret">▼</span>
     </button>
     <div class="gbody">
+      <div class="legume-note">🫘 <b>Beans &amp; chickpeas:</b> if you use dried instead of tinned, soak them overnight the day before, then <b>tip away the soaking water</b> and cook in fresh water — it cuts the compounds that cause bloating and is gentler on your gut. (Kidney beans: also boil hard for 10 min.)</div>
       <div class="gcols">${cats}${brothCard()}</div>
     </div>`;
   return wrap;
@@ -552,8 +673,17 @@ function wireUp(){
     window.scrollTo({top: $("nav.tabs").offsetTop, behavior:"smooth"});
   });
 
-  // grocery toggles + checkboxes (event delegation on document)
+  // grocery toggles + checkboxes + recipe drawers (event delegation on document)
   document.addEventListener("click", e=>{
+    const rxBtn = e.target.closest(".rx-toggle");
+    if(rxBtn){
+      const panel = rxBtn.nextElementSibling;
+      const opening = panel.hasAttribute("hidden");
+      if(opening){ panel.removeAttribute("hidden"); } else { panel.setAttribute("hidden",""); }
+      rxBtn.setAttribute("aria-expanded", opening);
+      rxBtn.querySelector(".rx-tri").textContent = opening ? "▾" : "▸";
+      return;
+    }
     const tog = e.target.closest(".gtoggle");
     if(tog){ toggleGrocery(tog.closest(".grocery")); return; }
     const item = e.target.closest(".gitem");
